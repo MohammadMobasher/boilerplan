@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using markaz.EntityFrameworkCore;
 
 namespace markaz.Migrations
 {
     [DbContext(typeof(markazDbContext))]
-    partial class markazDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210708030109_add relation to testtbl with tenant4")]
+    partial class addrelationtotesttblwithtenant4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

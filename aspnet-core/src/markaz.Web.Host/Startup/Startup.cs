@@ -19,8 +19,18 @@ using Abp.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
+using Castle.MicroKernel;
 using markaz.Web.Host.GraphQl;
+using markaz.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using GraphQL.Server.Ui.Voyager;
+using markaz.Web.Host.GraphQl.TestTbls;
+
+//using markaz.Web.Host.GraphQl;
+//using markaz.Web.Host.MGraphQL;
+//using GraphQL.Server;
+//using GraphQL;
+//using GraphQL.Server.Ui.Playground;
 
 namespace markaz.Web.Host.Startup
 {
@@ -41,6 +51,8 @@ namespace markaz.Web.Host.Startup
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services.AddPooledDbContextFactory<markazDbContext>(options => options.UseSqlServer("Server=localhost; Database=markazDb; Trusted_Connection=True;"));
+
             //MVC
             services.AddControllersWithViews(
                 options =>
@@ -60,7 +72,14 @@ namespace markaz.Web.Host.Startup
             IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
 
-
+            //services.AddScoped<markaz.Web.Host.GraphQl.Query>();
+            //GraphQL
+            services.AddGraphQLServer()
+                .AddQueryType<Query>()
+                .AddType<TestTblType>()
+                .AddFiltering()
+                .AddSorting()
+                .AddProjections();
 
             
 
@@ -117,10 +136,7 @@ namespace markaz.Web.Host.Startup
                 });
             });
 
-            //services.AddScoped<markaz.Web.Host.GraphQl.Query>();
-            services.AddGraphQLServer()
-                        .AddQueryType<Query>();
-
+            services.AddScoped<markaz.Web.Host.GraphQl.Query>();
             // Configure Abp and Dependency Injection
             return services.AddAbp<markazWebHostModule>(
                 // Configure Log4Net logging
@@ -148,10 +164,6 @@ namespace markaz.Web.Host.Startup
             app.UseAbpRequestLocalization();
 
 
-            
-
-
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGraphQL();
@@ -160,10 +172,8 @@ namespace markaz.Web.Host.Startup
                 endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
             });
 
-            app.UseGraphQLVoyager(new VoyagerOptions()
-            {
-                GraphQLEndPoint = "/graphql"
-            }, "/graphql-ui");
+
+            app.UseGraphQLVoyager();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint
             app.UseSwagger(c => { c.RouteTemplate = "swagger/{documentName}/swagger.json"; });

@@ -12,8 +12,13 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\markaz.Core\markaz.Core.csproj" />
+    <ProjectReference Include="..\markaz.EntityFrameworkCore\markaz.EntityFrameworkCore.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="testmohammad\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="HotChocolate.AspNetCore" Version="11.3.1" />
+    <PackageReference Include="HotChocolate.Data.EntityFramework" Version="11.3.1" />
   </ItemGroup>
 </Project>

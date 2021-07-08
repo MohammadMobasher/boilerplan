@@ -3,11 +3,13 @@ using Microsoft.Extensions.Configuration;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using markaz.Configuration;
+using markaz.EntityFrameworkCore;
 
 namespace markaz.Web.Host.Startup
 {
     [DependsOn(
-       typeof(markazWebCoreModule))]
+       typeof(markazWebCoreModule)
+       )]
     public class markazWebHostModule: AbpModule
     {
         private readonly IWebHostEnvironment _env;

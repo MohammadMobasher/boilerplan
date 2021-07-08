@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using markaz.EntityFrameworkCore;
 
 namespace markaz.Migrations
 {
     [DbContext(typeof(markazDbContext))]
-    partial class markazDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210707071223_add relation to testtbl with tenant2")]
+    partial class addrelationtotesttblwithtenant2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1575,6 +1577,9 @@ namespace markaz.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
+                    b.Property<int?>("TestTblId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorUserId");
@@ -1586,6 +1591,8 @@ namespace markaz.Migrations
                     b.HasIndex("LastModifierUserId");
 
                     b.HasIndex("TenancyName");
+
+                    b.HasIndex("TestTblId");
 
                     b.ToTable("AbpTenants");
                 });
@@ -1623,53 +1630,7 @@ namespace markaz.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TenantId");
-
                     b.ToTable("TestTbl");
-                });
-
-            modelBuilder.Entity("markaz.gg.Command", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("CommandLine")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HowTo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PlatformId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlatformId");
-
-                    b.ToTable("Command");
-                });
-
-            modelBuilder.Entity("markaz.gg.Platform", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("LicenseKey")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Platform");
                 });
 
             modelBuilder.Entity("Abp.Application.Features.EditionFeatureSetting", b =>
@@ -1908,6 +1869,10 @@ namespace markaz.Migrations
                         .WithMany()
                         .HasForeignKey("LastModifierUserId");
 
+                    b.HasOne("markaz.TestTable.TestTbl", null)
+                        .WithMany("Tenant")
+                        .HasForeignKey("TestTblId");
+
                     b.Navigation("CreatorUser");
 
                     b.Navigation("DeleterUser");
@@ -1915,28 +1880,6 @@ namespace markaz.Migrations
                     b.Navigation("Edition");
 
                     b.Navigation("LastModifierUser");
-                });
-
-            modelBuilder.Entity("markaz.TestTable.TestTbl", b =>
-                {
-                    b.HasOne("markaz.MultiTenancy.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("markaz.gg.Command", b =>
-                {
-                    b.HasOne("markaz.gg.Platform", "Platform")
-                        .WithMany("Commands")
-                        .HasForeignKey("PlatformId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Platform");
                 });
 
             modelBuilder.Entity("Abp.Application.Features.EditionFeatureSetting", b =>
@@ -2010,9 +1953,9 @@ namespace markaz.Migrations
                     b.Navigation("Tokens");
                 });
 
-            modelBuilder.Entity("markaz.gg.Platform", b =>
+            modelBuilder.Entity("markaz.TestTable.TestTbl", b =>
                 {
-                    b.Navigation("Commands");
+                    b.Navigation("Tenant");
                 });
 #pragma warning restore 612, 618
         }

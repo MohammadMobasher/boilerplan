@@ -1,18 +1,19 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using HotChocolate;
+using HotChocolate.Data;
 using markaz.EntityFrameworkCore;
+using markaz.gg;
+using markaz.MultiTenancy;
 using markaz.TestTable;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Transactions;
 
 namespace markaz.Web.Host.GraphQl
 {
     public class Query
     {
+
         //private readonly IRepository<TestTbl> _testTblRepository;
 
         //public Query()
@@ -20,12 +21,12 @@ namespace markaz.Web.Host.GraphQl
         //    this._testTblRepository = testTblRepository;
         //}
 
-        [UnitOfWork(isTransactional: true)]
-        public virtual async Task<IQueryable<TestTbl>> GetList([Service] IRepository<TestTbl> _testTblRepository)
-        {
-            var d = await _testTblRepository.GetAll().ToListAsync();
-            return _testTblRepository.GetAll();
-        }
+        //[UnitOfWork(isTransactional: true)]
+        //public virtual async Task<IQueryable<TestTbl>> GetList([Service] IRepository<TestTbl> _testTblRepository)
+        //{
+        //    var d = await _testTblRepository.GetAll().ToListAsync();
+        //    return _testTblRepository.GetAll();
+        //}
 
 
         //[UnitOfWork(isTransactional: false)]
@@ -36,16 +37,62 @@ namespace markaz.Web.Host.GraphQl
         //}
 
         //private readonly markazDbContext _context;
-        //public Query(markazDbContext context)
+
+        public Query()
+        {
+        }
+
+        [UseDbContext(typeof(markazDbContext))]
+        [UseProjection]
+        [UseFiltering]
+        [UseSorting]
+        public IQueryable<TestTbl> GetTestTbl([ScopedService] markazDbContext context)
+        {
+            return context.TestTbl;
+        }
+
+
+        [UseDbContext(typeof(markazDbContext))]
+        [UseProjection]
+
+        public IQueryable<Tenant> GetTenant([ScopedService] markazDbContext context)
+        {
+            return context.Tenants;
+        }
+
+        [UseDbContext(typeof(markazDbContext))]
+        public IQueryable<Platform> GetPlatform([ScopedService] markazDbContext context)
+        {
+            return context.Platform;
+        }
+
+        /// <summary>
+        /// Gets the queryable <see cref="Command"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="AppDbContext"/>.</param>
+        /// <returns>The queryable <see cref="Command"/>.</returns>
+        [UseDbContext(typeof(markazDbContext))]
+        [UseProjection]
+        public IQueryable<Command> GetCommand([ScopedService] markazDbContext context)
+        {
+            return context.Command;
+        }
+
+
+
+        //private readonly IRepository<TestTbl> _testTblRepository;
+
+        //public Query(IRepository<TestTbl> testTblRepository)
         //{
-        //    this._context = context;
+        //    this._testTblRepository = testTblRepository;
         //}
 
-
-        //public IQueryable<TestTbl> GetList([Service] markazDbContext context)
+        //[UnitOfWork(scope: TransactionScopeOption.RequiresNew)]
+        //public virtual IQueryable<TestTbl> GetList([Service] IRepository<TestTbl> _testTblRepository)
         //{
+        //    var d = _testTblRepository.GetAll();
 
-        //    return context.TestTbl;
+        //    return _testTblRepository.GetAll();
         //}
     }
 }

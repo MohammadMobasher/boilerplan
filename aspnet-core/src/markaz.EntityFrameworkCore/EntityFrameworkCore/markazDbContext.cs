@@ -4,7 +4,7 @@ using markaz.Authorization.Roles;
 using markaz.Authorization.Users;
 using markaz.MultiTenancy;
 using markaz.TestTable;
-
+using markaz.gg;
 
 namespace markaz.EntityFrameworkCore
 {
@@ -14,11 +14,14 @@ namespace markaz.EntityFrameworkCore
 
         
         public virtual DbSet<TestTbl> TestTbl { get; set; }
+        public virtual DbSet<Command> Command { get; set; }
+        public virtual DbSet<Platform> Platform { get; set; }
 
 
         public markazDbContext(DbContextOptions<markazDbContext> options)
             : base(options)
         {
+            //Database.EnsureCreated();
         }
 
         

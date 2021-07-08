@@ -16,6 +16,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Abp.Domain.Uow;
+using markaz.EntityFrameworkCore;
+using Abp.EntityFrameworkCore;
 
 namespace markaz.Test
 {
@@ -31,10 +33,12 @@ namespace markaz.Test
 
 
         public TestAppService(
+            IDbContextProvider<markazDbContext> _sampleDbContextProvider,
             IRepository<TestTbl> repository,
             IUnitOfWorkManager unitOfWorkManager) : base(repository)
         {
             _testTblRepository = repository;
+            //var d = _sampleDbContextProvider.GetDbContext().TestTbl.AsQueryable();
             _unitOfWorkManager = unitOfWorkManager;
 
         }
