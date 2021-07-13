@@ -28,7 +28,4 @@
   <ItemGroup>
     <ProjectReference Include="..\markaz.Core\markaz.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="GraphQL\" />
-  </ItemGroup>
 </Project>

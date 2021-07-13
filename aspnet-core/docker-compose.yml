@@ -1,0 +1,10 @@
+﻿version: '3'
+services:
+  markaz-accounting-app:
+    image: markaz-accounting-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 80
+  

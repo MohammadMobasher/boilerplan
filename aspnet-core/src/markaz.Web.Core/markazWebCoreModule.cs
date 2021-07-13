@@ -13,14 +13,17 @@ using markaz.Authentication.JwtBearer;
 using markaz.Configuration;
 using markaz.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Abp.AspNetCore.OData;
 
 namespace markaz
 {
     [DependsOn(
          typeof(markazApplicationModule),
          typeof(markazEntityFrameworkModule),
-         typeof(AbpAspNetCoreModule)
-        ,typeof(AbpAspNetCoreSignalRModule)
+         typeof(AbpAspNetCoreModule),
+         typeof(AbpAspNetCoreSignalRModule),
+         typeof(AbpAspNetCoreODataModule)
+
      )]
     public class markazWebCoreModule : AbpModule
     {

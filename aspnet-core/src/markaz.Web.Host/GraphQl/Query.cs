@@ -1,11 +1,16 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.AspNetCore.Mvc.Authorization;
+using Abp.Authorization;
+using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using HotChocolate;
+using HotChocolate.AspNetCore.Authorization;
 using HotChocolate.Data;
+using markaz.Authorization;
 using markaz.EntityFrameworkCore;
 using markaz.gg;
 using markaz.MultiTenancy;
 using markaz.TestTable;
+using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Transactions;
 
@@ -37,7 +42,7 @@ namespace markaz.Web.Host.GraphQl
         //}
 
         //private readonly markazDbContext _context;
-
+        
         public Query()
         {
         }
@@ -46,8 +51,11 @@ namespace markaz.Web.Host.GraphQl
         [UseProjection]
         [UseFiltering]
         [UseSorting]
+        //[Authorize]
+        //[AbpAuthorize(PermissionNames.Pages_Roles_Create)]
         public IQueryable<TestTbl> GetTestTbl([ScopedService] markazDbContext context)
         {
+
             return context.TestTbl;
         }
 

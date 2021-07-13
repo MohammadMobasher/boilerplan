@@ -8,7 +8,7 @@ namespace markaz.Web.Host.GraphQl.TestTbls
 
         protected override void Configure(IObjectTypeDescriptor<TestTbl> descriptor)
         {
-
+            //descriptor.Authorize();
             descriptor.Description("this is test description");
              descriptor.Field(x => x.Id).Ignore();
             descriptor.Field(x => x.Name).Description("mohammad: this is test from ObjectType file");

@@ -25,6 +25,11 @@ using markaz.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using GraphQL.Server.Ui.Voyager;
 using markaz.Web.Host.GraphQl.TestTbls;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.Net.Http.Headers;
+using Microsoft.AspNet.OData.Formatter;
+using Microsoft.AspNet.OData.Builder;
+using markaz.TestTable;
 
 //using markaz.Web.Host.GraphQl;
 //using markaz.Web.Host.MGraphQL;
@@ -79,9 +84,10 @@ namespace markaz.Web.Host.Startup
                 .AddType<TestTblType>()
                 .AddFiltering()
                 .AddSorting()
-                .AddProjections();
+                .AddProjections()
+                .AddAuthorization();
 
-            
+
 
             services.AddSignalR();
 
@@ -136,6 +142,21 @@ namespace markaz.Web.Host.Startup
                 });
             });
 
+            services.AddOData();
+
+            // Workaround: https://github.com/OData/WebApi/issues/1177
+            services.AddMvc(options =>
+            {
+                foreach (var outputFormatter in options.OutputFormatters.OfType<ODataOutputFormatter>().Where(_ => _.SupportedMediaTypes.Count == 0))
+                {
+                    outputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/prs.odatatestxx-odata"));
+                }
+                foreach (var inputFormatter in options.InputFormatters.OfType<ODataInputFormatter>().Where(_ => _.SupportedMediaTypes.Count == 0))
+                {
+                    inputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/prs.odatatestxx-odata"));
+                }
+            });
+
             services.AddScoped<markaz.Web.Host.GraphQl.Query>();
             // Configure Abp and Dependency Injection
             return services.AddAbp<markazWebHostModule>(
@@ -163,13 +184,26 @@ namespace markaz.Web.Host.Startup
 
             app.UseAbpRequestLocalization();
 
+            // Return IQueryable from controllers
+            app.UseUnitOfWork(options =>
+            {
+                options.Filter = httpContext => httpContext.Request.Path.Value.StartsWith("/odata", StringComparison.InvariantCultureIgnoreCase);
+            });
+
+            app.UseODataBatching();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGraphQL();
+                //.RequireAuthorization();
                 endpoints.MapHub<AbpCommonHub>("/signalr");
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
+
+
+                var builder = new ODataConventionModelBuilder();
+                builder.EntitySet<TestTbl>("TestTbl").EntityType.Expand().Filter().OrderBy().Page();
+                endpoints.MapODataRoute("odataPrefix", "odata", builder.GetEdmModel());
             });
 
 
