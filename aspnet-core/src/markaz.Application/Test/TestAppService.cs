@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Abp.Domain.Uow;
 using markaz.EntityFrameworkCore;
 using Abp.EntityFrameworkCore;
+using markaz.EntityFrameworkCore.Repositories;
 
 namespace markaz.Test
 {
@@ -30,20 +31,27 @@ namespace markaz.Test
 
         public IRepository<TestTbl> _testTblRepository { get; }
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-
+        private readonly TestTblRepository _testTblRepository2;
 
         public TestAppService(
             IDbContextProvider<markazDbContext> _sampleDbContextProvider,
             IRepository<TestTbl> repository,
-            IUnitOfWorkManager unitOfWorkManager) : base(repository)
+            IUnitOfWorkManager unitOfWorkManager,
+            TestTblRepository testTblRepository,
+            IPermissionChecker  permissionChecker,
+            IPermissionManager permissionManager) : base(repository)
         {
             _testTblRepository = repository;
             //var d = _sampleDbContextProvider.GetDbContext().TestTbl.AsQueryable();
             _unitOfWorkManager = unitOfWorkManager;
+            this._testTblRepository2 = testTblRepository;
+            var d = permissionManager.GetAllPermissions();
+
 
         }
 
-        //[AbpAuthorize(PermissionNames.Pages_Tests_List)]
+        
+        //[AbpAuthorize(PermissionNames.Pages_Tests_List, PermissionNames.Pages_Tenants)]
         [HttpPost]
             //, Route("ddddd")]
         public async override Task<PagedResultDto<TestDto>> GetAllAsync([FromBody]PagedTestResultRequestDto input)
